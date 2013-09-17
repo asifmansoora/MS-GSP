@@ -7,7 +7,7 @@ def main():
     M=[]
     L=[13,45,27,9,56,56]
     
-    
+    # Building a hashmap for items in param file
     for line in open(FILE_LOC,"r"):
         if(("SDC" or "sdc")  not in line):
             key=int(line[line.find("(")+1:line.find(")")])
