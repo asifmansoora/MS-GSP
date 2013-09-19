@@ -1,6 +1,6 @@
 
 import re
-from funcM import *
+
 
 from collections import Counter
 
@@ -21,6 +21,9 @@ contents = openFile.read()
 
 # Splitting each line with delim 
 withline = contents.split("\r\n")
+N = len(withline) - 1 # Total Number of transactions, eliminating the last null transaction
+#print N
+
 
 # Extracting the numbers alone with reg ex and appending it to a list
 strippedSeqItem =[]
@@ -35,6 +38,6 @@ itemsAll = list(Listflat(strippedSeqItem))
 
 # Use counter data structure to hold all the items with its count values
 countItems = Counter(itemsAll)
-print countItems
+# print countItems
 
-#Print M
+
