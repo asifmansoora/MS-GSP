@@ -23,6 +23,8 @@ def main():
             key=int(line[line.find("(")+1:line.find(")")])
             value=float(line[line.find("=")+1:].strip("\n"))
             MIS[key]=value
+        else:
+          sdc=float(line[line.find("=")+1:].strip("\n"))
     
        
     M=sort(MIS,M)
@@ -52,9 +54,30 @@ def main():
         if (countItems.get(str(item))/N >= firstItemMIS ):
             L.append(item)
     
-    print L  
+
     
     f1GenSet(L,MIS)
+    
+    #Converting L list  into String:
+    for i in range(0,len(L)):
+        L[i]=str(L[i])
+     
+    #Converting MIS dictionary into String: 
+    for key,value in MIS.iteritems():
+        del MIS[key]
+        MIS[str(key)]=value
+        
+    
+    # 'C' is Candidate List 
+    C=level2candgen(L,MIS,countItems)
+    #print(len(C))
+
+    
+    
+    
+    
+    
+    
 #     To check all the items in countItems dataset
 #     intvalu = []
 #     for value in countItems.keys():
@@ -63,13 +86,35 @@ def main():
 #     print intvalu.sort()
 
             #print line[line.find("(")+1:line.find(")")],line[line.find("=")+1:]
+
+
+
+def level2candgen(L,MIS,countItems):
+    C=[]
+    for l in range(0,len(L)):
+        #print "I:",L[l],"C:",(countItems[L[l]])*0.014,"M:",MIS[L[l]]
+        if float(countItems[L[l]])/float(N) >= MIS[L[l]]:
+                    
+            
+            for h in range(l+1,len(L)):
+                if countItems[L[h]]*0.014 >= MIS[L[l]] and abs(countItems[L[h]]*0.014-MIS[L[l]]) <= 0.05:
+                    str1="{"+L[l]+","+L[h]+"}"
+                    C.append(str1)
+                    str2="{"+L[l]+"}"+"{"+L[h]+"}"
+                    C.append(str2)
+    
+    return C
+
+    
+
+
 def f1GenSet(LSeed,MIS):
     f1=[]
     for item in LSeed:
         if (countItems.get(str(item))/N >= MIS.get(item) ):
             f1.append(item)
             
-    print f1    
+    print "F1:",f1    
 
 def sort(MIS,M):
        

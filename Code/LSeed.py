@@ -15,12 +15,13 @@ def Listflat(Mainlist):
 # More easier line : list(itertools.chain(*strippedSeqItem))
 
 # Reading the transaction file
-Filename = '/Users/asifmansoor/MS-GSP/Data/data.txt'
+#Filename = '/Users/asifmansoor/MS-GSP/Data/data.txt'
+Filename="C:\\Users\\balachandar\\Desktop\\Study\\Fall_2013\\Projects\\DM\\MSGSP\\data.txt"
 openFile = open(Filename)
 contents = openFile.read()
 
 # Splitting each line with delim 
-withline = contents.split("\r\n")
+withline = contents.split("\n")
 N = len(withline) - 1 # Total Number of transactions, eliminating the last null transaction
 #print N
 
