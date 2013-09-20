@@ -30,18 +30,19 @@ def main():
     M=sort(MIS,M)
     
     
-#     print M
-#     print MIS
+  
     
     # Check the first index element which satisfies MIS(i)
     itemCtr =0
     for item in M:
-        if (countItems.get(str(item))/N < MIS.get(item) ):
-            itemCtr = itemCtr+1;
+        #print "here",countItems.get(str(item)),float(N),MIS.get(item),float(countItems.get(str(item)))/float(N)
+        if (float(countItems.get(str(item)))/float(N) < MIS.get(item) ):
+            
+            itemCtr = itemCtr+1
         else:
             break
     
-#     print itemCtr
+   # print itemCtr
         
     # Appending the first item to L-seed
     firstItem = M[itemCtr]
@@ -51,7 +52,7 @@ def main():
     # Searching the element after first item which satisfies the
     # MIS(i) value
     for item in M[itemCtr+1:]:
-        if (countItems.get(str(item))/N >= firstItemMIS ):
+        if (float(countItems.get(str(item)))/float(N) >= firstItemMIS ):
             L.append(item)
     
 
@@ -61,16 +62,19 @@ def main():
     #Converting L list  into String:
     for i in range(0,len(L)):
         L[i]=str(L[i])
+        
+    
      
     #Converting MIS dictionary into String: 
     for key,value in MIS.iteritems():
         del MIS[key]
         MIS[str(key)]=value
+    
         
     
     # 'C' is Candidate List 
-    C=level2candgen(L,MIS,countItems)
-    #print(len(C))
+    C=level2candgen(L,MIS,countItems,sdc)
+    print(C)
 
     
     
@@ -89,15 +93,17 @@ def main():
 
 
 
-def level2candgen(L,MIS,countItems):
+def level2candgen(L,MIS,countItems,sdc):
     C=[]
     for l in range(0,len(L)):
-        #print "I:",L[l],"C:",(countItems[L[l]])*0.014,"M:",MIS[L[l]]
+        #print "I:",L[l],"C:",(countItems[L[l]])/float(N),"M:",MIS[L[l]]
         if float(countItems[L[l]])/float(N) >= MIS[L[l]]:
-                    
             
+                                
             for h in range(l+1,len(L)):
-                if countItems[L[h]]*0.014 >= MIS[L[l]] and abs(countItems[L[h]]*0.014-MIS[L[l]]) <= 0.05:
+                #print "H:",L[h],"C:",(countItems[L[h]])/float(N),"M:",MIS[L[l]]
+                if countItems[L[h]]/float(N) >= MIS[L[l]] and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc:
+                    
                     str1="{"+L[l]+","+L[h]+"}"
                     C.append(str1)
                     str2="{"+L[l]+"}"+"{"+L[h]+"}"
@@ -111,7 +117,7 @@ def level2candgen(L,MIS,countItems):
 def f1GenSet(LSeed,MIS):
     f1=[]
     for item in LSeed:
-        if (countItems.get(str(item))/N >= MIS.get(item) ):
+        if (float(countItems.get(str(item)))/float(N) >= MIS.get(item) ):
             f1.append(item)
             
     print "F1:",f1    
