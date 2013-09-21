@@ -13,7 +13,10 @@ def main():
     
     MIS={}
     M=[]
-    L=[] # L-seed list
+    F={}
+    L=[]
+    k=1
+     # L-seed list
     #FILE_LOC="C:\\Users\\balachandar\\Desktop\\Study\\Fall_2013\\Projects\\DM\\MSGSP\\para.txt"
     FILE_LOC="para.txt"
 
@@ -57,7 +60,9 @@ def main():
     
 
     
-    f1GenSet(L,MIS)
+    F[k]=f1GenSet(L,MIS)
+    k=k+1
+    
     
     #Converting L list  into String:
     for i in range(0,len(L)):
@@ -74,22 +79,13 @@ def main():
     
     # 'C' is Candidate List 
     C=level2candgen(L,MIS,countItems,sdc)
-    print(C)
-
+    #print(C)
+    
+    #check=contains("{30}{40,70}{50}","{30,70}{40,50}{40,80,60,70}")
+    #print "check",check    
     
     
-    
-    
-    
-    
-#     To check all the items in countItems dataset
-#     intvalu = []
-#     for value in countItems.keys():
-#         intvalu.append(int(value))
-#         
-#     print intvalu.sort()
-
-            #print line[line.find("(")+1:line.find(")")],line[line.find("=")+1:]
+      
 
 
 
@@ -102,7 +98,7 @@ def level2candgen(L,MIS,countItems,sdc):
                                 
             for h in range(l+1,len(L)):
                 #print "H:",L[h],"C:",(countItems[L[h]])/float(N),"M:",MIS[L[l]]
-                if countItems[L[h]]/float(N) >= MIS[L[l]] and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc:
+                if (countItems[L[h]]/float(N) >= MIS[L[l]]) and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc:
                     
                     str1="{"+L[l]+","+L[h]+"}"
                     C.append(str1)
@@ -112,6 +108,7 @@ def level2candgen(L,MIS,countItems,sdc):
     return C
 
     
+
 
 
 def f1GenSet(LSeed,MIS):
@@ -131,6 +128,60 @@ def sort(MIS,M):
      
     return M
     
-  
+    
+#to check if a candidate sequence'c'  is present in data sequence 's'
+def contains(c,s):
+    temp=c
+    counter=0
+    cseq=[]
+    dseq=[]
+    
+    seq_track={}
+    
+    #Splitting the candidate sequence into separate elements
+    while temp!="":
+        #cseq[counter]=temp[temp.find("{")+1:temp.find("}")].split(",")
+        cseq.append(temp[temp.find("{")+1:temp.find("}")].split(","))
+        temp=temp.replace("{"+temp[temp.find("{")+1:temp.find("}")]+"}","")
+        counter=counter+1
+        
+    temp=s
+    
+    
+    #Splitting the data sequence into separate elements
+    while temp!="":
+        #dseq[counter]=temp[temp.find("{")+1:temp.find("}")].split(",")
+        dseq.append(temp[temp.find("{")+1:temp.find("}")].split(","))
+        temp=temp.replace("{"+temp[temp.find("{")+1:temp.find("}")]+"}","")
+        
+        
+    pattern=0
+    
+    for can in cseq:
+        can_str=",".join(can)
+        pattern=0
+        for i in range(0,len(dseq)):
+            if set(can).issubset(set(dseq[i])):
+                pattern=pattern+(i+1)
+                seq_track[can_str]=pattern
+    
+   
+    if (len(set(seq_track.values()))==1 or len(set(seq_track.values()))==counter) and (len(set(seq_track.keys()))==counter):
+        
+        return 1
+    else:
+        return 0
+        
+                
+    
+    
+    
+    
+    
+        
+        
+    
+    
+      
     
 if  __name__ =='__main__':main()
