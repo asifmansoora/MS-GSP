@@ -11,12 +11,13 @@ import itertools
     
 def main():
     
-    MIS={}
-    count={}
-    M=[]
-    F={}
-    L=[]
-    k=1
+    MIS={}    # stores MIS values of all the items
+    count={}  # Stores count of all the items
+    M=[]      # Stores all the items in ascending order of their MIS
+    F={}      #dictionary to store frequent Itemsets of all lengths
+    L=[]      # Seed to generate C[2] and F[1]
+    k=1       # main counter variable
+    CandList = [] # List of all candidates
      # L-seed list
     #FILE_LOC="C:\\Users\\balachandar\\Desktop\\Study\\Fall_2013\\Projects\\DM\\MSGSP\\para.txt"
     FILE_LOC="para.txt"
@@ -30,12 +31,12 @@ def main():
         else:
           sdc=float(line[line.find("=")+1:].strip("\n"))
     
-       
+    # sorts all items in ascending order of MIS   
     M=sort(MIS,M)
     
     
   
-    
+    # L Seed generation
     # Check the first index element which satisfies MIS(i)
     itemCtr =0
     for item in M:
@@ -60,96 +61,92 @@ def main():
             L.append(item)
     
 
-    
+    #Generating F1
     f=f1GenSet(L,MIS)
-    F[k]=""
+    F[k]=[]
     for item in f:
-        F[k]=F[k]+"{"+str(item)+"}"
+        F[k].append("{"+str(item)+"}")
+    
     k=k+1
-
-        
     
-    
-    
-    
-    
-    
-    #Converting L list  into String:
+    #Converting L list  into String format:
     for i in range(0,len(L)):
         L[i]=str(L[i])
         
     
      
-    #Converting MIS dictionary into String: 
+    #Converting MIS dictionary into String format: 
     for key,value in MIS.iteritems():
         del MIS[key]
         MIS[str(key)]=value
+
     
- 
- 
- 
+    
+    
+    
+    # Entering the main For Loop
+    print "Value of outer K is", k
+    while (F[k-1]):
+        print "Value of K is", k
+        if k==2:
+            # Call candidate generation 2
+            CandList = level2candgen(L,MIS,countItems,sdc)
+            print "Potential candidate 2 list",CandList
+            
+        else:
+            # call candidate-k generation
+            CandList = CandGen(F[k-1],MIS)
         
- #--------------------------  Inside For loop--------------------------------------------   
-    # 'C' is Candidate List 
-    C=level2candgen(L,MIS,countItems,sdc)
-    
-    print C
-    
-    FILE_LOC="data.txt"
-    for line in open(FILE_LOC,"r"):
-        s=line[line.find("<")+1:line.find(">")]
-        for c in C:
+        
+        
             
-            #check=contains("{20,30}{80,90}","{10,20,30,70}{20,30,80}{45,90}{60,70,80}")
-            cnt=0
-            check=contains(c,s)
-            #print "check",check
-            if(check==1):
-                if c not in count:
-                    count[c]=1
-                else:
-                    count[c]=count[c]+1
-            
- 
- 
- 
- 
-                    
+        #Iterate through all the transactions with the generated Candidate 
+        
+        FILE_LOC="data.txt"
+        for line in open(FILE_LOC,"r"):
+            trans=line[line.find("<")+1:line.find(">")]
+            for cand in CandList:
+                #check=contains("{20,30}{80,90}","{10,20,30,70}{20,30,80}{45,90}{60,70,80}")
+                cnt=0
+                check=contains(cand,trans)
+                #print "check",check
+                # Count the presence of candidate in a transaction and store it in count
+                if(check==1):
+                    if cand not in count:
+                        count[cand]=1
+                    else:
+                        count[cand]=count[cand]+1
+                
+        print count
+        
+        F[k]=gen_F(CandList,MIS,count)
+        print "Frequent Itemsets of sequence -",k ," are ",F[k]
+        k=k+1
+       
+        
+    print "All Frequent Itemsets", F  
+        
     
- 
- 
- 
     
-    print count
-    F[k]=gen_F(C,MIS,count)
-    
-    print F
-    
-    
-    print "Join"
-    c=join("{1}{2}{3}","{1}{2}{3}")
-    
-    print "test"
-    
-   
+           
 #---------------------------- For loop ends here ----------------------------------------
 
 
 #candidate Generation for F[k]
 def CandGen(fkth,MIS):
     
-    fkth = ['<{1},{4},{5}>','<{1},{4},{6}>','<{1},{5},{6}>','<{1},{5,6}>','<{1},{6},{3}>','<{6},{3},{6}>','<{5,6},{3}>','<{5},{4},{3}>','<{4},{5},{3}>']
+#     fkth = ['<{1},{4},{5}>','<{1},{4},{6}>','<{1},{5},{6}>','<{1},{5,6}>','<{1},{6},{3}>','<{6},{3},{6}>','<{5,6},{3}>','<{5},{4},{3}>','<{4},{5},{3}>']
     fKsplit =[]
     candList =[]
 
     for seq in fkth:
         fKsplit.append((seq.replace("<","")).replace(">",""))
-        print fKsplit
+#         print fKsplit
 
 
     for s1Seq in fKsplit:
         s1 = s1Seq
-        print "s1: ",s1
+#         print "s1: ",s1
 
         for s2Seq in fKsplit:
             # s1 and s2 can be equal
@@ -163,7 +160,7 @@ def CandGen(fkth,MIS):
             
             listS1 = listItem(s1)
             listS2 = listItem(s2)
-            
+#             print listS1
             if(checkFirstItemLesser(listS1,MIS)==1):
             #check if the MIS Value of first item in s1 is smaller than 
             # the MIS value of all its item
@@ -177,33 +174,33 @@ def CandGen(fkth,MIS):
                 # remove last item from listS2
                 del listS2[-1]
     
-                print "s1 :",(','.join(listS1))
-                print "s2 :",(','.join(listS2))
-                    
-                print "MIS last s2: ",MISlastS2
-                print "MIS first s1: ",MISfirstS1
-                print("LastItemS1 :", int(lastItemS1))
-                print("LastItemS2 :", int(lastItemS2))
+#                 print "s1 :",(','.join(listS1))
+#                 print "s2 :",(','.join(listS2))
+#                     
+#                 print "MIS last s2: ",MISlastS2
+#                 print "MIS first s1: ",MISfirstS1
+#                 print("LastItemS1 :", int(lastItemS1))
+#                 print("LastItemS2 :", int(lastItemS2))
                 if((','.join(listS1) == ','.join(listS2)) and (MISlastS2 > MISfirstS1)):
                     # append last item with '{' '}' to check for matching substring
                     lastElemS2 = "{"+lastItemS2 +"}"
-                    print "lastElemS2",lastElemS2 
+#                     print "lastElemS2",lastElemS2 
                     
                     #check if the last item is an element in s2
                     if(s2.rfind(lastElemS2)==(len(s2)-len(lastElemS2))):
-                        withLastElemS1=s1+","+lastElemS2
-                        print "c1 candidate :",withLastElemS1
+                        withLastElemS1=s1+lastElemS2
+#                         print "c1 candidate :",withLastElemS1
                         candList.append(withLastElemS1)
                         if((lengthSeq(s1) == 2) and (sizeSeq(s1)==2) and (int(lastItemS2)>int(lastItemS1))):
                             lastElemItemS1 = s1[:len(s1)-1] +','+lastItemS2+s1[len(s1)-1:]
-                            print "c2 candidate :", lastElemItemS1
+#                             print "c2 candidate :", lastElemItemS1
                             candList.append(lastElemItemS1)
                     
                     # else if the last item is not a separate element
                     
                     elif( ( (lengthSeq(s1)==2 and sizeSeq(s1)==1) and (int(lastItemS2)>int(lastItemS1))) or (lengthSeq(s1) >2)) :
                         ItemtoLastElemS1 = s1[:len(s1)-1] +','+lastItemS2+s1[len(s1)-1:]
-                        print "Item added to last element of S1: ", ItemtoLastElemS1
+#                         print "Item added to last element of S1: ", ItemtoLastElemS1
                         candList.append( ItemtoLastElemS1)
     
             elif(checkLastItemLesser(listS2,MIS)==1):
@@ -218,39 +215,48 @@ def CandGen(fkth,MIS):
                 # remove 2nd last item from listS2
                 del listS2[-2]
     
-                print "s1 :",(','.join(listS1))
-                print "s2 :",(','.join(listS2))
-                    
-                print "MIS last s2: ",MISlastS2
-                print "MIS first s1: ",MISfirstS1
-                print("LastItemS1 :", int(lastItemS1))
-                print("LastItemS2 :", int(lastItemS2))
+#                 print "s1 :",(','.join(listS1))
+#                 print "s2 :",(','.join(listS2))
+#                     
+#                 print "MIS last s2: ",MISlastS2
+#                 print "MIS first s1: ",MISfirstS1
+#                 print("LastItemS1 :", int(lastItemS1))
+#                 print("LastItemS2 :", int(lastItemS2))
                 if((','.join(listS1) == ','.join(listS2)) and (MISlastS2 < MISfirstS1)):
                     # append first item with '{' '}' in S1 to check for matching substring
                     firstElemS1 = "{"+firstItemS1 +"}"
-                    print "firstElemS1: ",firstElemS1 
+#                     print "firstElemS1: ",firstElemS1 
                     #check if the First item is an first element in s1
                     if(s1.find(firstElemS1)==0):
-                        withFirstElemS2=firstElemS1+","+s2
-                        print "c1 candidate :",withFirstElemS2
+                        withFirstElemS2=firstElemS1+s2
+#                         print "c1 candidate :",withFirstElemS2
                         candList.append(withFirstElemS2)
                         if((lengthSeq(s2) == 2) and (sizeSeq(s2)==2) and (int(firstItemS1)<int(firstItemS2))):
                             firstElemItemS2 = s2[:1]+firstItemS1+','+s2[1:]
-                            print "c2 candidate :", firstElemItemS2
+#                             print "c2 candidate :", firstElemItemS2
                             candList.append(firstElemItemS2)
                     
                     # if first item is not a separate element in s1
                     elif( ( (lengthSeq(s2)==2 and sizeSeq(s2)==1) and (int(firstItemS2)>int(firstItemS1))) or (lengthSeq(s2) >2)) :
                         ItemtoFirstElemS2 = s2[:1]+firstItemS1+','+s2[1:]
-                        print "Item added to first element of S2: ", ItemtoFirstElemS2 
+#                         print "Item added to first element of S2: ", ItemtoFirstElemS2 
                         candList.append( ItemtoFirstElemS2 )
             
             # Join using normal operation
             else:
                  candList.append((join(s1,s2)))           
-            
+                 print "After else :", candList
     # Print candidate list before pruning
-    print candList
+    print "Before Pruning",candList
+    for i in range(0,len(candList)):
+        if (prune(candList[i],fKsplit,MIS))==0:
+            print "Deleting Candidate",candList[i]
+            del candList[i]
+    
+    
+    print "After Pruning",candList
+    
+    return candList        
     
 
 
@@ -314,7 +320,7 @@ def level2candgen(L,MIS,countItems,sdc):
             for h in range(0,len(L)):
                 #print "H:",L[h],"C:",(countItems[L[h]])/float(N),"M:",MIS[L[l]]
                 if(h!=l):
-                    if (countItems[L[h]]/float(N) >= MIS[L[l]]) and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=1.00:
+                    if (countItems[L[h]]/float(N) >= MIS[L[l]]) and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc:
                         str1="{"+L[l]+","+L[h]+"}"
                         C.append(str1)
                         str2="{"+L[l]+"}"+"{"+L[h]+"}"
@@ -457,7 +463,7 @@ def listItem(seq) :
 def lengthSeq(S):
     ItemList = re.sub(r'\D'," ",S).strip() 
     ListItems = ItemList.split()
-    print "Lenght :", len(ListItems)
+#     print "Lenght :", len(ListItems)
     return len(ListItems)
 
 # Size of a sequence
@@ -466,22 +472,23 @@ def sizeSeq(S):
     if(count !=S.count('}')):
         print "{ } does not match in the given sequence: ",S
         return 0
-    print "Size : ", count
+#     print "Size : ", count
     return count
 
 # Check if first item is lesser than all in a itemset    
 def checkFirstItemLesser(S,MIS):
     firstItem = S[0]
+#     print firstItem
     MISFirstItem = float(MIS.get(firstItem))
     
     # check for item which has MIS value lesser than MIS First item,
     # If yes, return 0, else return 1
     for items in S[1:]:
         if(float(MIS.get(items))<MISFirstItem ):
-            print "First Item is not lesser in S1"
+#             print "First Item is not lesser in S1"
             return 0
     
-    print "First Item is lesser in S1"
+#     print "First Item is lesser in S1"
     return 1
     
 # Check if last item is lesser than all in a itemset  
@@ -492,10 +499,10 @@ def checkLastItemLesser(S,MIS):
     # If yes, return 0, else return 1
     for items in S[:-1]:
         if(float(MIS.get(items))<MISLastItem):
-            print "Last Item is not lesser in S2"
+#             print "Last Item is not lesser in S2"
             return 0
     
-    print "Last Item is lesser in S2"
+#     print "Last Item is lesser in S2"
     return 1
                
     
@@ -512,9 +519,15 @@ def get_positions(xs, item):
         yield ()
         
         
-def prune(c,s,F,MIS):
+def prune(c,FK_1,MIS):
      
-    subseqs=[]
+    FK_1={}  
+    L=[]
+    sorted_MIS={}
+    minitems=[]
+    print "Candudate",c
+    #MIS={'12':0.014,'48':0.345,'24':0.024,'75':0.567,'123':0.989}
+    
     #c="{12,24}{48,75}{123}"
     cseq=[]
     #cseq=[['12','24'],['48','75'],['123']]
@@ -524,52 +537,89 @@ def prune(c,s,F,MIS):
         cseq.append(temp[temp.find("{")+1:temp.find("}")].split(","))
         temp=temp.replace("{"+temp[temp.find("{")+1:temp.find("}")]+"}","",1)
     
-    #print cseq
-    
-    #Extracts all numbers from the string
-    data=re.findall(r'\d+',c)
+    print cseq
+    I=re.findall(r'\d+',c)
     N=[]
-    
-    #Converts numbers from string format into int format
-    for i in range(0,len(data)):
-        N.append(int(data[i]))
+    #F[1]="{30}{40}{20}"
+    #F[2]=['{30}{40}','{40}{30}']
+    #F[3]=['{1}{3,5}','{4,3}{5}']
+    #F[4]=["{12,24}{48,75}","{12,24}{48}{123}"]
+    #print "F:",F
 
+    #print str(10)
+
+    for i in range(0,len(I)):
+        N.append(int(I[i]))
+
+    #Finds a list of Minitems    
+    min_value=min([(MIS[x],x) for x in MIS])[0]
+    for key in MIS.iterkeys():
+        if MIS[key]==min_value:
+            minitems.append(int(key))
+    
+            
+#     print "minitems:",minitems
+    
+    
     
     prev_pat=-1
         
-    #Produces subsequences  if length k-1
-    subseqs=list(itertools.combinations(N, k-1))
-    print subseqs   
-    s=""
     
-    #Inserts brackets at correct positions for the subsequence
-    for i in range(0,len(subseqs)):
+    L=list(itertools.combinations(N, 4))
+    print L   
+    sub=""
+    for i in range(0,len(L)):
         
         
-        s=""
+        sub=""
         prev_pat=-1
-        for j in range(0,len(subseqs[i])):
+        for j in range(0,len(L[i])):
         
-            pat=list(get_positions(cseq,str(subseqs[i][j])))
+            pat=list(get_positions(cseq,str(L[i][j])))
             
             #print "Pat",pat[0][0],"Prev_pat",prev_pat
             if(pat[0][0]!=prev_pat):
                 
-                s=s+"{"+str(subseqs[i][j])+"}"
+                sub=sub+"{"+str(L[i][j])+"}"
                 #print s
                 
             else:
-                s=s[:-1]+","+str(subseqs[i][j])+"}"
+                sub=sub[:-1]+","+str(L[i][j])+"}"
                 #print s
                 
             
             prev_pat=pat[0][0]
         
-        print "Out",s
+        #print "Out",s
+                
+            
+        if sub in FK_1:
+            print "Yes",sub
+            #summa=0
+            return 1
+        else:
+            if checkmintem(sub,minitems)==1:
+                #print "No",sub
+                #summa=0
+                return 0
+                
+            else:
+                #print "Yes",sub
+                #summa=0#
+                return 1
         
-        if s in F:
-            print "yes"
-
+        
+        
+        
+def checkmintem(s,minitems):
+    items=re.findall(r'\d+',s)
+    
+    for i in range(0,len(items)):
+        if int(items[i]) in minitems:
+            return 1
+    
+    return 0
+        
     
      
         
