@@ -4,6 +4,7 @@ Created on Sep 16, 2013
 @author: asifmansoor
 '''
 from __future__ import division
+from collections import OrderedDict
 from LSeed import countItems,N
 import sys,re
 import itertools
@@ -21,6 +22,7 @@ def main():
      # L-seed list
     #FILE_LOC="C:\\Users\\balachandar\\Desktop\\Study\\Fall_2013\\Projects\\DM\\MSGSP\\para.txt"
     FILE_LOC="para.txt"
+    
 
     
     for line in open(FILE_LOC,"r"):
@@ -95,7 +97,8 @@ def main():
             
         else:
             # call candidate-k generation
-            CandList = CandGen(F[k-1],MIS)
+            CandList = CandGen(F[k-1],MIS,k)
+            #summa=0
         
         
         
@@ -105,9 +108,11 @@ def main():
         FILE_LOC="data.txt"
         for line in open(FILE_LOC,"r"):
             trans=line[line.find("<")+1:line.find(">")]
+            #trans=trans.replace(" ","")
             for cand in CandList:
                 #check=contains("{20,30}{80,90}","{10,20,30,70}{20,30,80}{45,90}{60,70,80}")
                 cnt=0
+                
                 check=contains(cand,trans)
                 #print "check",check
                 # Count the presence of candidate in a transaction and store it in count
@@ -116,24 +121,34 @@ def main():
                         count[cand]=1
                     else:
                         count[cand]=count[cand]+1
+                    if k>=5:
+                        print "count of K ",cand,count[cand]
                 
-        print count
+        #print "Count",k,count
         
         F[k]=gen_F(CandList,MIS,count)
         print "Frequent Itemsets of sequence -",k ," are ",F[k]
         k=k+1
+        
        
         
-    print "All Frequent Itemsets", F  
+    print "All Frequent Itemsets", F
+    
+    print "COunt :",count
+    
+    
+    print "Confirm Order"
+    #print confirmOrder("{30}{40}","{40}{30}{40, 60}")
+   
+  
         
     
-    
-           
 #---------------------------- For loop ends here ----------------------------------------
 
 
 #candidate Generation for F[k]
-def CandGen(fkth,MIS):
+def CandGen(fkth,MIS,k):
+    print "Inside CanGen"
     
 #     fkth = ['<{1},{4},{5}>','<{1},{4},{6}>','<{1},{5},{6}>','<{1},{5,6}>','<{1},{6},{3}>','<{6},{3},{6}>','<{5,6},{3}>','<{5},{4},{3}>','<{4},{5},{3}>']
     fKsplit =[]
@@ -162,6 +177,7 @@ def CandGen(fkth,MIS):
             listS2 = listItem(s2)
 #             print listS1
             if(checkFirstItemLesser(listS1,MIS)==1):
+                
             #check if the MIS Value of first item in s1 is smaller than 
             # the MIS value of all its item
             
@@ -204,6 +220,7 @@ def CandGen(fkth,MIS):
                         candList.append( ItemtoLastElemS1)
     
             elif(checkLastItemLesser(listS2,MIS)==1):
+                
                 #check if the MIS Value of first item in s1 is smaller than 
                 # the MIS value of all its item
                 MISlastS2 = float(MIS.get(listS2[-1]))
@@ -244,24 +261,32 @@ def CandGen(fkth,MIS):
             
             # Join using normal operation
             else:
-                 candList.append((join(s1,s2)))           
-                 print "After else :", candList
+                #print "here"
+                candList.append((join(s1,s2)))
+                candList=list(set(candList))    
+                #candList.remove('')     
+                 #print "After else :", candList
     # Print candidate list before pruning
     print "Before Pruning",candList
     for i in range(0,len(candList)):
-        if (prune(candList[i],fKsplit,MIS))==0:
+        if (prune(candList[i],fKsplit,MIS,k))==0:
             print "Deleting Candidate",candList[i]
             del candList[i]
     
     
     print "After Pruning",candList
+    if '' in candList:
+        candList.remove('')
+    
+    
+    # Removes duplicates from the list
+    candList=list(OrderedDict.fromkeys(candList))
     
     return candList        
     
 
 
-
-
+    
 
 #Generates F[k] from Candidate 'C'
 def gen_F(C,MIS,count):
@@ -300,7 +325,7 @@ def level2candgen_b(L,MIS,countItems,sdc):
                                 
             for h in range(l+1,len(L)):
                 #print "H:",L[h],"C:",(countItems[L[h]])/float(N),"M:",MIS[L[l]]
-                if (countItems[L[h]]/float(N) >= MIS[L[l]]) and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=1.00:
+                if (countItems[L[h]]/float(N) >= MIS[L[l]]) and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=SDC:
                     
                     str1="{"+L[l]+","+L[h]+"}"
                     C.append(str1)
@@ -310,6 +335,7 @@ def level2candgen_b(L,MIS,countItems,sdc):
     return C
 
 def level2candgen(L,MIS,countItems,sdc):
+    print "SDC",sdc
     C=[]
     print "L:",L
     for l in range(0,len(L)):
@@ -320,7 +346,7 @@ def level2candgen(L,MIS,countItems,sdc):
             for h in range(0,len(L)):
                 #print "H:",L[h],"C:",(countItems[L[h]])/float(N),"M:",MIS[L[l]]
                 if(h!=l):
-                    if (countItems[L[h]]/float(N) >= MIS[L[l]]) and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc:
+                    if (countItems[L[h]]/float(N) >= MIS[L[l]] and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc):
                         str1="{"+L[l]+","+L[h]+"}"
                         C.append(str1)
                         str2="{"+L[l]+"}"+"{"+L[h]+"}"
@@ -372,10 +398,13 @@ def sort(MIS,M):
      
     return M
     
-    
+
+
+# Rev -1  included a function confirmOrder    
 #to check if a candidate sequence'c'  is present in data sequence 's'
 def contains(c,s):
     temp=c
+    s=s.replace(" ","")
     counter=0
     cseq=[]
     sorted_cseq=[]
@@ -436,24 +465,27 @@ def contains(c,s):
     
   
     
-    if sum(flag)==counter:
+    if sum(flag)==counter and confirmOrder(c,s):
+        
         return 1
     else:
         return 0
                 
                 
             
-                #pattern=pattern+(i+1)
-                #seq_track[can_str]=pattern
-    
-   
-  #  if (len(set(seq_track.values()))==1 or len(set(seq_track.values()))==counter) and (len(set(seq_track.keys()))==counter):
-   #     print "Sum:",seq_track.values(),len(set(seq_track.values()))
-    #    return 1
-  #  else:
-   #     return 0
-        
 
+
+#Checks and confirms order of items within an itemset
+def confirmOrder(c,s):
+    
+    cand=re.findall(r'\d+',c)
+    trans=re.findall(r'\d+',s)
+    for i in range(1,len(cand)):
+        if(trans.index(cand[i])<trans.index(cand[i-1])):
+            if((len(trans)-trans[::-1].index(cand[i])-1)<(len(trans)-trans[::-1].index(cand[i-1])-1)):
+                return 0
+    return 1
+    
 # Generata a list of Item used for Fk candidate Generation
 def listItem(seq) :
     ItemList = re.sub(r'\D'," ",seq).strip() 
@@ -475,6 +507,8 @@ def sizeSeq(S):
 #     print "Size : ", count
     return count
 
+
+# rev-1 changes '<' to '<='
 # Check if first item is lesser than all in a itemset    
 def checkFirstItemLesser(S,MIS):
     firstItem = S[0]
@@ -484,13 +518,15 @@ def checkFirstItemLesser(S,MIS):
     # check for item which has MIS value lesser than MIS First item,
     # If yes, return 0, else return 1
     for items in S[1:]:
-        if(float(MIS.get(items))<MISFirstItem ):
+        if(float(MIS.get(items))<=MISFirstItem ):
 #             print "First Item is not lesser in S1"
             return 0
     
 #     print "First Item is lesser in S1"
     return 1
-    
+
+
+# rev-1 changes '<' to '<='    
 # Check if last item is lesser than all in a itemset  
 def checkLastItemLesser(S,MIS):
     lastItem = S[-1]
@@ -498,7 +534,7 @@ def checkLastItemLesser(S,MIS):
     # check for item which has MIS value lesser than MIS Last item,
     # If yes, return 0, else return 1
     for items in S[:-1]:
-        if(float(MIS.get(items))<MISLastItem):
+        if(float(MIS.get(items))<=MISLastItem):
 #             print "Last Item is not lesser in S2"
             return 0
     
@@ -519,13 +555,13 @@ def get_positions(xs, item):
         yield ()
         
         
-def prune(c,FK_1,MIS):
+def prune(c,FK_1,MIS,k):
      
-    FK_1={}  
+    #FK_1={}  
     L=[]
     sorted_MIS={}
     minitems=[]
-    print "Candudate",c
+    #print "Candudate",c
     #MIS={'12':0.014,'48':0.345,'24':0.024,'75':0.567,'123':0.989}
     
     #c="{12,24}{48,75}{123}"
@@ -537,7 +573,7 @@ def prune(c,FK_1,MIS):
         cseq.append(temp[temp.find("{")+1:temp.find("}")].split(","))
         temp=temp.replace("{"+temp[temp.find("{")+1:temp.find("}")]+"}","",1)
     
-    print cseq
+    #print cseq
     I=re.findall(r'\d+',c)
     N=[]
     #F[1]="{30}{40}{20}"
@@ -558,15 +594,15 @@ def prune(c,FK_1,MIS):
             minitems.append(int(key))
     
             
-#     print "minitems:",minitems
+    #print "minitems:",minitems
     
     
     
     prev_pat=-1
         
     
-    L=list(itertools.combinations(N, 4))
-    print L   
+    L=list(itertools.combinations(N, k-1))
+    #print L   
     sub=""
     for i in range(0,len(L)):
         
@@ -592,7 +628,8 @@ def prune(c,FK_1,MIS):
         
         #print "Out",s
                 
-            
+        print "sub",sub
+        print "FK_1",FK_1
         if sub in FK_1:
             print "Yes",sub
             #summa=0
