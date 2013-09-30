@@ -24,7 +24,8 @@ def main():
     FILE_LOC="para.txt"
     
 
-    
+    print "Started Running..."
+    print "Reading parameter file.."
     for line in open(FILE_LOC,"r"):
         if(("SDC" or "sdc")  not in line):
             key=int(line[line.find("(")+1:line.find(")")])
@@ -35,9 +36,9 @@ def main():
     
     # sorts all items in ascending order of MIS   
     M=sort(MIS,M)
+    print "Sorted M..."
     
-    
-  
+    print "Generating L Seed...."
     # L Seed generation
     # Check the first index element which satisfies MIS(i)
     itemCtr =0
@@ -62,7 +63,7 @@ def main():
         if (float(countItems.get(str(item)))/float(N) >= firstItemMIS ):
             L.append(item)
     
-
+    print "F1 Generation....."
     #Generating F1
     f=f1GenSet(L,MIS)
     F[k]=[]
@@ -87,13 +88,13 @@ def main():
     
     
     # Entering the main For Loop
-    print "Value of outer K is", k
+    #print "Value of outer K is", k
     while (F[k-1]):
-        print "Value of K is", k
+        #print "Value of K is", k
         if k==2:
             # Call candidate generation 2
             CandList = level2candgen(L,MIS,countItems,sdc)
-            print "Potential candidate 2 list",CandList
+            #print "Potential candidate 2 list",CandList
             
         else:
             # call candidate-k generation
@@ -104,7 +105,7 @@ def main():
         
             
         #Iterate through all the transactions with the generated Candidate 
-        
+       
         FILE_LOC="data.txt"
         for line in open(FILE_LOC,"r"):
             trans=line[line.find("<")+1:line.find(">")]
@@ -121,23 +122,38 @@ def main():
                         count[cand]=1
                     else:
                         count[cand]=count[cand]+1
-                    if k>=5:
-                        print "count of K ",cand,count[cand]
+                    #if k>=5:
+                     #   print "count of K ",cand,count[cand]
                 
         #print "Count",k,count
         
         F[k]=gen_F(CandList,MIS,count)
-        print "Frequent Itemsets of sequence -",k ," are ",F[k]
+        print "Frequent Itemsets of sequence -",k ," are generated...."
         k=k+1
         
        
         
-    print "All Frequent Itemsets", F
+    #print "All Frequent Itemsets", F
+    seqNum =1
+    while(len(F)!=seqNum):
+        print "The number of length ",seqNum, " Sequential patterns is ",len(F.get(seqNum))
+        if(seqNum==1):
+            for item in F.get(seqNum):
+                print "Pattern: <",item,">  Count: ",countItems.get(item[item.find("{")+1:item.find("}")])
+                
+        else:
+            for item in F.get(seqNum):
+                print "Pattern: <",item,">  Count: ",count.get(item)
+        
+        print "******************************************************"
+        print "                      "
+        seqNum = seqNum+1
     
-    print "COunt :",count
+    
+    #print "COunt :",count
     
     
-    print "Confirm Order"
+    print "*************COMPLETED********************"
     #print confirmOrder("{30}{40}","{40}{30}{40, 60}")
    
   
@@ -148,7 +164,7 @@ def main():
 
 #candidate Generation for F[k]
 def CandGen(fkth,MIS,k):
-    print "Inside CanGen"
+    #print "Inside CanGen"
     
 #     fkth = ['<{1},{4},{5}>','<{1},{4},{6}>','<{1},{5},{6}>','<{1},{5,6}>','<{1},{6},{3}>','<{6},{3},{6}>','<{5,6},{3}>','<{5},{4},{3}>','<{4},{5},{3}>']
     fKsplit =[]
@@ -267,14 +283,14 @@ def CandGen(fkth,MIS,k):
                 #candList.remove('')     
                  #print "After else :", candList
     # Print candidate list before pruning
-    print "Before Pruning",candList
+    #print "Before Pruning",candList
     for i in range(0,len(candList)):
         if (prune(candList[i],fKsplit,MIS,k))==0:
-            print "Deleting Candidate",candList[i]
+            #print "Deleting Candidate",candList[i]
             del candList[i]
     
     
-    print "After Pruning",candList
+    #print "After Pruning",candList
     if '' in candList:
         candList.remove('')
     
@@ -325,7 +341,7 @@ def level2candgen_b(L,MIS,countItems,sdc):
                                 
             for h in range(l+1,len(L)):
                 #print "H:",L[h],"C:",(countItems[L[h]])/float(N),"M:",MIS[L[l]]
-                if (countItems[L[h]]/float(N) >= MIS[L[l]]) and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=SDC:
+                if (countItems[L[h]]/float(N) >= MIS[L[l]]) and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc:
                     
                     str1="{"+L[l]+","+L[h]+"}"
                     C.append(str1)
@@ -335,9 +351,9 @@ def level2candgen_b(L,MIS,countItems,sdc):
     return C
 
 def level2candgen(L,MIS,countItems,sdc):
-    print "SDC",sdc
+    #print "SDC",sdc
     C=[]
-    print "L:",L
+    #print "L:",L
     for l in range(0,len(L)):
         #print "I:",L[l],"C:",(countItems[L[l]])/float(N),"M:",MIS[L[l]]
         if float(countItems[L[l]])/float(N) >= MIS[L[l]]:
@@ -381,12 +397,14 @@ def join(s1,s2):
     
 def f1GenSet(LSeed,MIS):
     f1=[]
+    #print "List of F1 itemsets:"
     for item in LSeed:
         if (float(countItems.get(str(item)))/float(N) >= MIS.get(item) ):
             #print item,N,float(countItems.get(str(item)))/float(N) ,MIS.get(item)
+            #print item ,":",countItems.get(str(item))
             f1.append(item)
             
-    print "F1:",f1 
+    #print "F1:",f1 
     return f1   
 
 def sort(MIS,M):
@@ -628,11 +646,10 @@ def prune(c,FK_1,MIS,k):
         
         #print "Out",s
                 
-        print "sub",sub
-        print "FK_1",FK_1
+        #print "sub",sub
+        #print "FK_1",FK_1
         if sub in FK_1:
-            print "Yes",sub
-            #summa=0
+            #print "Yes",sub
             return 1
         else:
             if checkmintem(sub,minitems)==1:
