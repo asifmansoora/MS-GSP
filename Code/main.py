@@ -57,11 +57,20 @@ def main():
     firstItemMIS = MIS.get(firstItem) 
     L.append(firstItem)
     
+    
+    
+    
     # Searching the element after first item which satisfies the
     # MIS(i) value
     for item in M[itemCtr+1:]:
         if (float(countItems.get(str(item)))/float(N) >= firstItemMIS ):
             L.append(item)
+    
+    
+    
+    
+    
+    
     
     print "F1 Generation....."
     #Generating F1
@@ -333,35 +342,18 @@ def gen_F(C,MIS,count):
     
     
 def level2candgen_b(L,MIS,countItems,sdc):
-    C=[]
-    for l in range(0,len(L)):
-        #print "I:",L[l],"C:",(countItems[L[l]])/float(N),"M:",MIS[L[l]]
-        if float(countItems[L[l]])/float(N) >= MIS[L[l]]:
-            
-                                
-            for h in range(l+1,len(L)):
-                #print "H:",L[h],"C:",(countItems[L[h]])/float(N),"M:",MIS[L[l]]
-                if (countItems[L[h]]/float(N) >= MIS[L[l]]) and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc:
-                    
-                    str1="{"+L[l]+","+L[h]+"}"
-                    C.append(str1)
-                    str2="{"+L[l]+"}"+"{"+L[h]+"}"
-                    C.append(str2)
-                        
-    return C
-
-def level2candgen(L,MIS,countItems,sdc):
     #print "SDC",sdc
     C=[]
     #print "L:",L
     for l in range(0,len(L)):
         #print "I:",L[l],"C:",(countItems[L[l]])/float(N),"M:",MIS[L[l]]
-        if float(countItems[L[l]])/float(N) >= MIS[L[l]]:
+        #if float(countItems[L[l]])/float(N) >= MIS[L[l]]:
             
                                 
             for h in range(0,len(L)):
                 #print "H:",L[h],"C:",(countItems[L[h]])/float(N),"M:",MIS[L[l]]
                 if(h!=l):
+                    min=l if MIS[L[l]]<=MIS[L[h]] else h                                                                  
                     if (countItems[L[h]]/float(N) >= MIS[L[l]] and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc):
                         str1="{"+L[l]+","+L[h]+"}"
                         C.append(str1)
@@ -370,6 +362,45 @@ def level2candgen(L,MIS,countItems,sdc):
                         
     return C
     
+
+# Modified the  logic to generate 2 item sets
+def level2candgen(L,MIS,countItems,sdc):
+    #print "SDC",sdc
+    C=[]
+    #print "L:",L
+    for l in range(0,len(L)):
+        #print "I:",L[l],"C:",(countItems[L[l]])/float(N),"M:",MIS[L[l]]
+        #if float(countItems[L[l]])/float(N) >= MIS[L[l]]:
+            
+                                
+            for h in range(l+1,len(L)):
+                #print "H:",L[h],"C:",(countItems[L[h]])/float(N),"M:",MIS[L[l]]
+                if(h!=l):
+                                                                                    
+                    if (countItems[L[h]]/float(N) >= MIS[L[l]] and abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc):
+                        str1="{"+L[l]+","+L[h]+"}"
+                        C.append(str1)
+                        str2="{"+L[l]+"}"+"{"+L[h]+"}"
+                        C.append(str2)
+                        str3="{"+L[h]+","+L[l]+"}"
+                        C.append(str3)
+                        str4="{"+L[h]+"}"+"{"+L[l]+"}"
+                        C.append(str4)
+                        
+    return C
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def join(s1,s2):
