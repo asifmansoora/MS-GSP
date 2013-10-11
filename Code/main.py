@@ -56,7 +56,7 @@ def main():
     # Check the first index element which satisfies MIS(i)
     itemCtr =0
     for item in M:
-        #print "here",countItems.get(str(item)),float(N),MIS.get(item),float(countItems.get(str(item)))/float(N)
+       
         if (float(countItems.get(str(item)))/float(N) < MIS.get(item) ):
             
             itemCtr = itemCtr+1
@@ -77,8 +77,7 @@ def main():
     # Searching the element after first item which satisfies the
     # MIS(i) value
     
-    #print "M:",M
-    #print "Count",countItems
+
     for item in M[itemCtr+1:]:
         #if str(item) in countItems:
         if (float(countItems.get(str(item)))/float(N) >= firstItemMIS ):
@@ -143,19 +142,18 @@ def main():
             trans=line[line.find("<")+1:line.find(">")]
             #trans=trans.replace(" ","")
             for cand in CandList:
-                #check=contains("{20,30}{80,90}","{10,20,30,70}{20,30,80}{45,90}{60,70,80}")
+                
                 cnt=0
                 
                 check=contains(cand,trans)
-                #print "check",check
+              
                 # Count the presence of candidate in a transaction and store it in count
                 if(check==1):
                     if cand not in count:
                         count[cand]=1
                     else:
                         count[cand]=count[cand]+1
-                    #if k>=5:
-                     #   print "count of K ",cand,count[cand]
+                    
                 
         #print "Count",k,count
         
@@ -184,17 +182,11 @@ def main():
     
     
     
-#     for line in open(FILE_LOC,"r"):
-#             trans=line[line.find("<")+1:line.find(">")]
-#             print "Confirm Order",confirmOrder("{80,70}",trans)
-    
-    #print(count['{30,80}'])
-    
+
     print "*************COMPLETED********************"
     
     
-    #prune(c,FK_1,MIS,k)
-    #print "SUBSEQUENCE",prune("{10}{10}{10}","{10}{10}",MIS,3)
+   
     
     
    
@@ -222,10 +214,7 @@ def CandGen(fkth,MIS,k,sdc):
 #         print "s1: ",s1
 
         for s2Seq in fKsplit:
-            # s1 and s2 can be equal
-            #if s1 == s2Seq:
-                #print "s1=s2 :",s2Seq
-                #continue
+         
 
             
             s2 = s2Seq
@@ -251,14 +240,7 @@ def CandGen(fkth,MIS,k,sdc):
                 # remove last item from listS2
                 del listS2[-1]
     
-#                 print "s1 :",(','.join(listS1))
-#                 print "s2 :",(','.join(listS2))
-#                     
-#                 print "MIS last s2: ",MISlastS2
-#                 print "MIS first s1: ",MISfirstS1
-#                 print("LastItemS1 :", int(lastItemS1))
-#                 print("LastItemS2 :", int(lastItemS2))
-                #abs((countItems[L[h]]/float(N))-(countItems[L[l]]/float(N)))<=sdc
+
                 if((','.join(listS1) == ','.join(listS2)) and (MISlastS2 > MISfirstS1) and ( abs((countItems[secItemS1sdc]/float(N))- (countItems[lastItemS2sdc]/float(N)))<=sdc   )):
                     # append last item with '{' '}' to check for matching substring
                     lastElemS2 = "{"+lastItemS2 +"}"
@@ -296,14 +278,7 @@ def CandGen(fkth,MIS,k,sdc):
                 del listS1[0]
                 # remove 2nd last item from listS2
                 del listS2[-2]
-    
-#                 print "s1 :",(','.join(listS1))
-#                 print "s2 :",(','.join(listS2))
-#                     
-#                 print "MIS last s2: ",MISlastS2
-#                 print "MIS first s1: ",MISfirstS1
-#                 print("LastItemS1 :", int(lastItemS1))
-#                 print("LastItemS2 :", int(lastItemS2))
+
                 if((','.join(listS1) == ','.join(listS2)) and (MISlastS2 < MISfirstS1) and ( abs((countItems[firstS1itemsdc]/float(N))- (countItems[secLastS2itemsdc]/float(N)))<=sdc   )):
                     # append first item with '{' '}' in S1 to check for matching substring
                     firstElemS1 = "{"+firstItemS1 +"}"
@@ -335,14 +310,8 @@ def CandGen(fkth,MIS,k,sdc):
     #print "Before Pruning",candList
     if '' in candList:
         candList.remove('')
-    #print "Before Pruning",len(candList),candList
-    
-#     for i in range(0,len(candList)):
-#         print i,candList[i]
-#         if (prune(candList[i],fKsplit,MIS,k))==0:
-#             #print "Deleting Candidate",candList[i]
-#             del candList[i]
-#     
+
+   
 
     for itemValue in candList:
         if (prune(itemValue,fKsplit,MIS,k))==0:
@@ -409,8 +378,7 @@ def level2candgen_b(L,MIS,countItems,sdc):
     C=[]
     #print "L:",L
     for l in range(0,len(L)):
-        #print "I:",L[l],"C:",(countItems[L[l]])/float(N),"M:",MIS[L[l]]
-        #if float(countItems[L[l]])/float(N) >= MIS[L[l]]:
+
             
                                 
             for h in range(0,len(L)):
@@ -505,8 +473,7 @@ def f1GenSet(LSeed,MIS):
     for item in LSeed:
         if (float(countItems.get(str(item)))/float(N) >= MIS.get(item) ):
              f1.append(item)               
-            #print item,N,float(countItems.get(str(item)))/float(N) ,MIS.get(item)
-            #print item ,":",countItems.get(str(item))
+
                 
             
     #print "F1:",f1 
@@ -541,13 +508,7 @@ def sort(MIS,M):
             start=cnt
     
     
-    
-    #print list(Listflat(upd_M))
-    
-    #print "MIS:",MIS
-    
-    
-    #M=list(Listflat(upd_M))   
+
     
     return M
     
@@ -616,9 +577,7 @@ def contains(c,s):
         
        
         for i in range(pattern+1,len(dseq)):
-            
-            #print "can:",set(can)
-            #print "dat:",set(dseq[i])
+
             if (len(can)!=len(set(can))) == False:
                 
                 if (set(can).issubset(set(dseq[i]))) and (flag[i]==0):
@@ -741,13 +700,8 @@ def prune(c,FK_1,MIS,k):
     #print "cseq",cseq
     I=re.findall(r'\d+',c)
     X=[]
-    #F[1]="{30}{40}{20}"
-    #F[2]=['{30}{40}','{40}{30}']
-    #F[3]=['{1}{3,5}','{4,3}{5}']
-    #F[4]=["{12,24}{48,75}","{12,24}{48}{123}"]
-    #print "F:",F
 
-    #print str(10)
+
 
     for i in range(0,len(I)):
         X.append(int(I[i]))
@@ -814,10 +768,7 @@ def prune(c,FK_1,MIS,k):
             
             prev_pat=current_pat
         
-        #print "Out",s
-                
-        #print "sub",sub
-        #print "FK_1",FK_1
+
         if sub in FK_1:
             #print "Yes",sub
             return 1
